@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quick Qs 💬</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page">
+  <main id="main" class="fade-in">
+    <div class="center-card">
+      <h2 id="qTitle">Question</h2>
+      <div id="qArea" class="q-area" role="group" aria-labelledby="qTitle"></div>
+
+      <div id="response" class="response" aria-live="polite"></div>
+
+      <div class="controls">
+        <button id="nextQuestion" class="btn ghost" style="display:none">Next</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Questions tailored exactly as you specified
+    const questions = [
+      {
+        q: "Who's the cutest person in the world?",
+        options: ["You", "You", "Arey, it can only be you"],
+        response: () => "Correct answer 😏"
+      },
+      {
+        q: "What's my favourite thing about you?",
+        options: ["Your smile", "Your eyes", "Everything about you"],
+        response: (sel) => sel === "Everything about you"
+          ? "Yes, everything about you! 🥰"
+          : `${sel} and everything about you 🥰`
+      },
+      {
+        q: "If you could give me a nickname, what would that be?",
+        options: ["Idiot", "Tubelight", "Something else"],
+        allowsText: true,
+        response: () => "You'd better tell me the nickname in person 😉"
+      },
+      {
+        q: "Who's my favourite human?",
+        options: ["You", "You", "There is no other option - Only you"],
+        response: () => "Well you had no other options 😌"
+      }
+    ];
+
+    let current = 0;
+    const qTitle = document.getElementById('qTitle');
+    const qArea = document.getElementById('qArea');
+    const responseDiv = document.getElementById('response');
+    const nextQuestionBtn = document.getElementById('nextQuestion');
+
+    function renderQuestion(idx) {
+      responseDiv.innerText = '';
+      nextQuestionBtn.style.display = 'none';
+      qArea.innerHTML = '';
+      const obj = questions[idx];
+      qTitle.innerText = obj.q;
+
+      obj.options.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn option';
+        btn.innerText = opt;
+        btn.addEventListener('click', () => handleAnswer(opt, obj));
+        qArea.appendChild(btn);
+      });
+
+      if (obj.allowsText) {
+        const or = document.createElement('div');
+        or.className = 'or-text';
+        or.innerHTML = `<div style="margin:10px 0;font-size:0.95rem;color:var(--muted)">Or type your own:</div>`;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = 'Write a nickname...';
+        input.className = 'text-input';
+        const submit = document.createElement('button');
+        submit.className = 'btn';
+        submit.innerText = 'Submit';
+        submit.addEventListener('click', () => {
+          if (input.value.trim() !== '') handleAnswer(input.value.trim(), obj, true);
+        });
+        or.appendChild(input);
+        or.appendChild(submit);
+        qArea.appendChild(or);
+      }
+    }
+
+    function handleAnswer(choice, obj, typed=false) {
+      // disable options
+      [...qArea.querySelectorAll('button')].forEach(b => b.disabled = true);
+      // compute response
+      let resp;
+      if (typeof obj.response === 'function') {
+        resp = obj.response(choice);
+      } else resp = obj.response;
+
+      responseDiv.innerText = resp;
+      nextQuestionBtn.style.display = 'inline-block';
+      // small confetti for delight
+      confetti && confetti({ particleCount: 10, spread: 60 });
+    }
+
+    nextQuestionBtn.addEventListener('click', () => {
+      current++;
+      if (current >= questions.length) {
+        pageNavigate('surprise.html');
+      } else {
+        renderQuestion(current);
+      }
+    });
+
+    // initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      renderQuestion(0);
+    });
+  </script>
+</body>
+</html>

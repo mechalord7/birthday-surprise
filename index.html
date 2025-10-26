@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hello, beautiful 💜</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page">
+  <!-- Loading overlay -->
+  <div id="loader" class="loader" aria-hidden="false">
+    <div class="loader-inner">
+      <div class="sparkle">✨</div>
+      <div class="loader-text">Loading your surprise... 💜</div>
+    </div>
+  </div>
+
+  <main id="main" class="fade-in">
+    <div class="center-card" id="introCard">
+      <h1 id="message">Hello, beautiful! Wondering what this is? Click the button below to see 😘</h1>
+
+      <!-- container for safe button placement -->
+      <div id="btnZone" class="btn-zone">
+        <button id="magicButton" class="btn">Click Me</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // init & shy button behavior (runs after loader)
+    initLoader();
+
+    // wait until loader fades
+    setTimeout(() => {
+      const btn = document.getElementById('magicButton');
+      const msg = document.getElementById('message');
+      const btnZone = document.getElementById('btnZone');
+      let clickCount = 0;
+
+      // compute a safe random position inside btnZone that avoids overlapping message
+      function placeButtonRandomly() {
+        // get bounding of zone and card and message
+        const zoneRect = btnZone.getBoundingClientRect();
+        const cardRect = document.getElementById('introCard').getBoundingClientRect();
+        const msgRect = msg.getBoundingClientRect();
+
+        // button size
+        const btnW = Math.min(260, zoneRect.width * 0.8);
+        const btnH = 48;
+
+        // choose area below the heading but within zone
+        const minTop = Math.max(msgRect.bottom + 12, zoneRect.top);
+        const maxTop = zoneRect.bottom - btnH - 12;
+        const topPx = Math.max(minTop, Math.min(maxTop, (Math.random() * (maxTop - minTop)) + minTop));
+
+        const leftPx = Math.random() * (zoneRect.width - btnW) + zoneRect.left;
+
+        // position using fixed coordinates relative to viewport
+        btn.style.position = 'fixed';
+        btn.style.left = Math.max(12, leftPx) + 'px';
+        btn.style.top = topPx + 'px';
+        btn.style.minWidth = btnW + 'px';
+        btn.style.zIndex = 50;
+      }
+
+      btn.addEventListener('click', () => {
+        clickCount++;
+        if (clickCount === 1) {
+          placeButtonRandomly();
+          msg.innerText = "Oops! Even the button is shy when you touch it xD 😂 Try clicking it again!";
+        } else if (clickCount === 2) {
+          // bring back to center (safe) and style
+          btn.style.position = '';
+          btn.style.left = '';
+          btn.style.top = '';
+          btn.style.minWidth = '';
+          btn.style.background = 'linear-gradient(90deg,#ffd36b,#ff8ad6)';
+          btn.style.color = '#2a0330';
+          btn.innerText = 'Here is your surprise 💝';
+          msg.innerText = "Okay okay, it’s done running away 😅 Ready?";
+        } else {
+          pageNavigate('step2.html');
+        }
+      });
+
+      // ensure window resize keeps button safe (if it's been moved)
+      window.addEventListener('resize', () => {
+        if (btn.style.position === 'fixed') placeButtonRandomly();
+      });
+    }, 600);
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Almost there 💞</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page">
+  <main id="main" class="fade-in">
+    <div class="center-card">
+      <h1 id="teaseText">Hmm... not so fast 😜</h1>
+      <button id="nextBtn" class="btn">Continue</button>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    const texts = [
+      "You didn’t think it would be that easy, right? 😏",
+      "Alright fine... maybe one more click.",
+      "Okay okay, I promise this time it's for real 💖"
+    ];
+    let stage = 0;
+    const teaseText = document.getElementById('teaseText');
+    const nextBtn = document.getElementById('nextBtn');
+
+    nextBtn.addEventListener('click', () => {
+      if (stage < texts.length) {
+        teaseText.classList.remove('pop');
+        void teaseText.offsetWidth;
+        teaseText.innerText = texts[stage];
+        teaseText.classList.add('pop');
+        stage++;
+      } else {
+        nextBtn.innerText = "Now we're ready! 🎁";
+        setTimeout(() => pageNavigate('questions.html'), 650);
+      }
+    });
+  </script>
+</body>
+</html>

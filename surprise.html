@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your surprise 🎀</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+</head>
+<body class="page">
+  <!-- audio: upbeat dreamy track (Pixabay CDN) -->
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/audio/2023/02/28/audio_6fbb22b58e.mp3" type="audio/mpeg" />
+  </audio>
+
+  <main id="main" class="fade-in">
+    <div class="container-narrow center-card">
+      <!-- header is slightly raised to avoid overlap with box -->
+      <h1 id="boxMessage" style="margin-bottom:18px;">There’s something inside for you! Go ahead and open 🎁</h1>
+
+      <!-- 3D gift box: centered and balanced -->
+      <div id="scene">
+        <div id="gift" class="gift-3d" tabindex="0" role="button" aria-label="Open gift box">
+          <div class="lid" id="lid"></div>
+          <div class="box-body">
+            <div class="ribbon-vertical"></div>
+            <div class="ribbon-horizontal"></div>
+            <div class="bow">
+              <div class="bow-left"></div>
+              <div class="bow-right"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- typing note: your message is placed below -->
+      <pre id="note" class="note typing" data-text="Happy Birthday Pooja ma! Words cannot describe how much you mean to me. As I look up to the sky or look to the earth or just look around, I see you in everything. You deserve the world and more. I hope this small surprise brings a smile to your face. I wish I could be with you to see that smile, but know that I'll always be here, cheering for you and rooting for you. Here's to a smashingly beautiful year ahead, filled with love, laughter, happiness and all the success you deserve. Happy Birthday once again!! - From tubelight, Arunvenkat 💖"> </pre>
+    </div>
+  </main>
+
+  <div id="hearts" class="hearts"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const gift = document.getElementById('gift');
+      const lid = document.getElementById('lid');
+      const noteEl = document.getElementById('note');
+      const boxMessage = document.getElementById('boxMessage');
+      const music = document.getElementById('bgMusic');
+
+      const finalText = noteEl.getAttribute('data-text') || "Happy Birthday!";
+      // opening flag
+      let opened = false;
+
+      function openBox() {
+        if (opened) return;
+        opened = true;
+
+        // animate lid (3D flip)
+        lid.style.transform = 'rotateX(170deg) translateY(-10px)';
+        lid.style.boxShadow = '0 18px 40px rgba(0,0,0,0.35)';
+
+        // play music (the user gesture from earlier pages should allow this)
+        music.play().catch(()=>{ /* ignore autoplay block issues */ });
+
+        // confetti and hearts
+        launchConfetti();
+        floatingHeartsBurst(22, 30);
+
+        // reveal typed note after a short delay
+        setTimeout(() => {
+          boxMessage.innerText = "Told you there's something inside 💖";
+          // typing using Great Vibes font style (applied in CSS)
+          typeWrite(noteEl, finalText, 28);
+        }, 700);
+
+        // subtle opened wobble
+        gift.classList.add('opened');
+        setTimeout(()=> gift.classList.remove('opened'), 900);
+      }
+
+      gift.addEventListener('click', openBox);
+      gift.addEventListener('keydown', (e)=> { if (e.key === 'Enter' || e.key === ' ') openBox(); });
+
+      // confetti helper
+      function launchConfetti() {
+        const duration = 2 * 1000;
+        const end = Date.now() + duration;
+        (function frame() {
+          confetti({ particleCount: 8, angle: 60, spread: 55, origin: { x: 0 }});
+          confetti({ particleCount: 8, angle: 120, spread: 55, origin: { x: 1 }});
+          if (Date.now() < end) requestAnimationFrame(frame);
+        }());
+      }
+
+      function floatingHeartsBurst(count = 18, interval = 40) {
+        for (let i=0;i<count;i++){
+          setTimeout(() => floatingHeart(), i*interval);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
